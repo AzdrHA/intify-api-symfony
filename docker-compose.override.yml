@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  php_api:
+    build:
+      context: ./docker/php
+      target: symfony_php
+      args:
+        SYMFONY_VERSION: ${SYMFONY_VERSION:-}
+        STABILITY: ${STABILITY:-dev}
+        SERVER_NAME: ${SERVER_NAME:-localhost}
+    user: 1000:1000
+
