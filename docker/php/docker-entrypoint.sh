@@ -17,8 +17,8 @@ until bin/console doctrine:query:sql "select 1" >/dev/null 2>&1; do
   sleep 1
 done
 
-#bin/console doctrine:migrations:sync-metadata-storage
-#bin/console doctrine:cache:clear-metadata
-#bin/console doctrine:migrations:migrate --no-interaction
+bin/console doctrine:migrations:sync-metadata-storage
+bin/console doctrine:cache:clear-metadata
+bin/console doctrine:migrations:migrate --no-interaction
 
 exec docker-php-entrypoint "$@"
