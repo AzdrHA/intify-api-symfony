@@ -2,13 +2,12 @@
 
 namespace App\Service\Auth;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Exception\ApiFormErrorException;
 use App\Form\Auth\RegisterType;
 use App\Manager\User\UserManager;
 use App\Service\DefaultService;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;

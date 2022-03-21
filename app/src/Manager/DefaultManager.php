@@ -2,7 +2,7 @@
 
 namespace App\Manager;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;

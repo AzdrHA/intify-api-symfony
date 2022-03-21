@@ -2,7 +2,7 @@
 
 namespace App\Form\Auth;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Form\DefaultForm;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Entity;
+namespace App\Entity\User;
 
-use DateTime;
 use App\Traits\TimestampableTrait;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -79,6 +79,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="boolean", options={"default": 0})
      */
     private bool $enabled = false;
+
+    /**
+     * @var UserStatus|null
+     *
+     * @ORM\OneToOne(targetEntity="App\Entity\User\UserStatus", inversedBy="user")
+     */
+    private ?UserStatus $status = null;
 
     /**
      * @var DateTime|null
@@ -235,5 +242,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastLoginAt(?DateTime $lastLoginAt): void
     {
         $this->lastLoginAt = $lastLoginAt;
+    }
+
+    /**
+     * @return UserStatus
+     */
+    public function getStatus(): UserStatus
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param UserStatus $status
+     */
+    public function setStatus(UserStatus $status): void
+    {
+        $this->status = $status;
     }
 }
