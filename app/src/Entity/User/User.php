@@ -4,6 +4,8 @@ namespace App\Entity\User;
 
 use App\Traits\TimestampableTrait;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -81,6 +83,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $enabled = false;
 
     /**
+     * @var DateTime|null
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private ?DateTime $lastLoginAt = null;
+
+    /**
      * @var UserStatus|null
      *
      * @ORM\OneToOne(targetEntity="App\Entity\User\UserStatus", inversedBy="user")
@@ -88,11 +97,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?UserStatus $status = null;
 
     /**
-     * @var DateTime|null
+     * @var Collection
      *
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Guild\Guild", mappedBy="owner")
      */
-    private ?DateTime $lastLoginAt = null;
+    private Collection $guildsOwner;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Message\Message", mappedBy="owner")
+     */
+    private Collection $messagesOwner;
+
+    public function __construct()
+    {
+        $this->guildsOwner = new ArrayCollection();
+        $this->messagesOwner = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {

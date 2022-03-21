@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Entity\User;
+namespace App\Entity\Message;
 
+use App\Entity\Channel\Channel;
+use App\Entity\User\User;
 use App\Traits\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -9,13 +11,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity()
  */
-class UserStatus
+class Message
 {
     use TimestampableTrait;
 
     /**
-     * @var int
-     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -25,8 +25,7 @@ class UserStatus
     /**
      * @var string
      *
-     * @ORM\Column(type="string")
-     * @Assert\Length(min=1, max=100)
+     * @ORM\Column(type="text")
      * @Assert\NotNull()
      */
     private string $content;
@@ -34,9 +33,18 @@ class UserStatus
     /**
      * @var User
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\User\User", mappedBy="status")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="messagesOwner", cascade={"persist"})
+     * @Assert\NotNull()
      */
-    private User $user;
+    private User $owner;
+
+    /**
+     * @var Channel
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Channel\Channel", inversedBy="messages", cascade={"persist"})
+     * @Assert\NotNull()
+     */
+    private Channel $channel;
 
     /**
      * @return int
@@ -71,18 +79,18 @@ class UserStatus
     }
 
     /**
-     * @return User
+     * @return Channel
      */
-    public function getUser(): User
+    public function getChannel(): Channel
     {
-        return $this->user;
+        return $this->channel;
     }
 
     /**
-     * @param User $user
+     * @param Channel $channel
      */
-    public function setUser(User $user): void
+    public function setChannel(Channel $channel): void
     {
-        $this->user = $user;
+        $this->channel = $channel;
     }
 }
