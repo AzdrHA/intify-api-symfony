@@ -8,5 +8,5 @@ kernel:
     type: annotation
 
 authentication_token:
-    path: "%api_route%/login"
+    path: /authentication_token
     methods: ['POST']

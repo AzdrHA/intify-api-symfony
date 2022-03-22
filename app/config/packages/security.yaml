@@ -11,7 +11,7 @@ security:
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             entity:
-                class: App\Entity\User
+                class: App\Entity\User\User
                 property: email
     firewalls:
         dev:
@@ -26,7 +26,7 @@ security:
             lazy: true
             provider: app_user_provider
             json_login:
-                check_path: /authentication_token
+                check_path: "/authentication_token"
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
@@ -42,10 +42,9 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: "%api_route%/login", roles: PUBLIC_ACCESS }
-        - { path: "%api_route%/version", roles: PUBLIC_ACCESS }
-        - { path: "%api_route%/auth/register", roles: PUBLIC_ACCESS }
-        - { path: "%api_route%", roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/docs, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/authentication_token, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:
