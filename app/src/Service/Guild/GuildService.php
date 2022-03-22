@@ -6,6 +6,7 @@ use App\Entity\Guild\Guild;
 use App\Exception\ApiFormErrorException;
 use App\Form\Guild\CreateGuildType;
 use App\Manager\Guild\GuildManager;
+use App\Service\Channel\ChannelService;
 use App\Service\DefaultService;
 use App\Service\User\UserService;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -16,11 +17,14 @@ class GuildService extends DefaultService
 {
     private UserService $userService;
     private GuildManager $guildManager;
-    public function __construct(FormFactoryInterface $formFactory, UserService $userService, GuildManager $guildManager)
-    {
+    private ChannelService $channelService;
+    public function __construct(
+        FormFactoryInterface $formFactory, UserService $userService, GuildManager $guildManager, ChannelService $channelService
+    ) {
         $this->formFactory = $formFactory;
         $this->userService = $userService;
         $this->guildManager = $guildManager;
+        $this->channelService = $channelService;
     }
 
     /**
@@ -35,6 +39,7 @@ class GuildService extends DefaultService
         $closure = function () use ($guild)
         {
             $guild->setOwner($this->userService->getUserOrException());
+            $this->channelService->initializeDefaultChannel($guild);
             $this->guildManager->save($guild);
         };
 

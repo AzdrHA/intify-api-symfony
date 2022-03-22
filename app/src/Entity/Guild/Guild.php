@@ -2,6 +2,7 @@
 
 namespace App\Entity\Guild;
 
+use App\Entity\Channel\Channel;
 use App\Entity\File\File;
 use App\Entity\User\User;
 use App\Traits\TimestampableTrait;
@@ -45,14 +46,14 @@ class Guild
     /**
      * @var User|null
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="guildsOwner", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="guildsOwner", cascade={"all"})
      */
     private ?User $owner = null;
 
     /**
      * @var Collection
      *
-     * @ORM\OneToMany(targetEntity="App\Entity\Channel\Channel", mappedBy="guild")
+     * @ORM\OneToMany(targetEntity="App\Entity\Channel\Channel", mappedBy="guild", cascade={"all"})
      */
     private Collection $channels;
 
@@ -139,5 +140,15 @@ class Guild
     public function setChannels(ArrayCollection|Collection $channels): void
     {
         $this->channels = $channels;
+    }
+
+    public function addChannel(Channel $channel): self
+    {
+        if (!$this->channels->contains($channel)) {
+            $this->channels[] = $channel;
+            $channel->setGuild($this);
+        }
+
+        return $this;
     }
 }
