@@ -34,7 +34,6 @@ class Message
      * @var User
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="messagesOwner", cascade={"persist"})
-     * @Assert\NotNull()
      */
     private User $owner;
 
@@ -42,7 +41,6 @@ class Message
      * @var Channel
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Channel\Channel", inversedBy="messages", cascade={"persist"})
-     * @Assert\NotNull()
      */
     private Channel $channel;
 
@@ -92,5 +90,21 @@ class Message
     public function setChannel(Channel $channel): void
     {
         $this->channel = $channel;
+    }
+
+    /**
+     * @return User
+     */
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @param User $owner
+     */
+    public function setOwner(User $owner): void
+    {
+        $this->owner = $owner;
     }
 }
