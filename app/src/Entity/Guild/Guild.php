@@ -18,13 +18,13 @@ class Guild
     use TimestampableTrait;
 
     /**
-     * @var int
+     * @var int|null
      *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private int $id;
+    private ?int $id = null;
 
     /**
      * @var string
@@ -43,12 +43,11 @@ class Guild
     private ?File $icon = null;
 
     /**
-     * @var User
+     * @var User|null
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="guildsOwner", cascade={"persist"})
-     * @Assert\NotNull()
      */
-    private User $owner;
+    private ?User $owner = null;
 
     /**
      * @var Collection
@@ -60,5 +59,85 @@ class Guild
     public function __construct()
     {
         $this->channels = new ArrayCollection();
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int|null $id
+     */
+    public function setId(?int $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return File|null
+     */
+    public function getIcon(): ?File
+    {
+        return $this->icon;
+    }
+
+    /**
+     * @param File|null $icon
+     */
+    public function setIcon(?File $icon): void
+    {
+        $this->icon = $icon;
+    }
+
+    /**
+     * @return User
+     */
+    public function getOwner(): User
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @param User $owner
+     */
+    public function setOwner(User $owner): void
+    {
+        $this->owner = $owner;
+    }
+
+    /**
+     * @return ArrayCollection|Collection
+     */
+    public function getChannels(): ArrayCollection|Collection
+    {
+        return $this->channels;
+    }
+
+    /**
+     * @param ArrayCollection|Collection $channels
+     */
+    public function setChannels(ArrayCollection|Collection $channels): void
+    {
+        $this->channels = $channels;
     }
 }
