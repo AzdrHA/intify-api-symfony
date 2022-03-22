@@ -48,6 +48,6 @@ class AuthService extends DefaultService
 
         $this->handleForm($request, RegisterType::class, $user, $callback);
 
-        return $this->normalizeSingle($user, ['password']);
+        return $this->normalizeSingle($user);
     }
 }
