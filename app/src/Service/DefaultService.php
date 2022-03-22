@@ -19,7 +19,7 @@ class DefaultService
     protected array $listWhiteList = [];
     protected array $singleWhiteList = [];
     protected array $singleBlackList = [];
-    protected array $commonBlackList = [];
+    protected array $commonBlackList = ['password'];
 
     /**
      * @param Request $request
