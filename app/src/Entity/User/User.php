@@ -97,6 +97,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?UserStatus $status = null;
 
     /**
+     * @return UserStatus|null
+     */
+    public function getStatus(): ?UserStatus
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param UserStatus|null $status
+     */
+    public function setStatus(?UserStatus $status): void
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getGuildsOwner(): ArrayCollection|Collection
+    {
+        return $this->guildsOwner;
+    }
+
+    /**
+     * @param Collection $guildsOwner
+     */
+    public function setGuildsOwner(ArrayCollection|Collection $guildsOwner): void
+    {
+        $this->guildsOwner = $guildsOwner;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getMessagesOwner(): ArrayCollection|Collection
+    {
+        return $this->messagesOwner;
+    }
+
+    /**
+     * @param Collection $messagesOwner
+     */
+    public function setMessagesOwner(ArrayCollection|Collection $messagesOwner): void
+    {
+        $this->messagesOwner = $messagesOwner;
+    }
+
+    /**
      * @var Collection
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Guild\Guild", mappedBy="owner")
@@ -264,21 +312,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastLoginAt(?DateTime $lastLoginAt): void
     {
         $this->lastLoginAt = $lastLoginAt;
-    }
-
-    /**
-     * @return UserStatus
-     */
-    public function getStatus(): UserStatus
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param UserStatus $status
-     */
-    public function setStatus(UserStatus $status): void
-    {
-        $this->status = $status;
     }
 }
