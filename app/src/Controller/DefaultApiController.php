@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Exception\ApiException;
 use App\Exception\ApiFormErrorException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,6 +35,9 @@ abstract class DefaultApiController extends AbstractController
             $fn_args = $context["args"] ?? [];
 
             $res = $service->$fn($request, ...$fn_args);
+        } catch(ApiException $e){
+            $this->logger->error($e->getMessage(), ["uri" => $request->getUri()]);
+            return new JsonResponse(["error" => $e->getMessage()], $e->getCode()>400 ? $e->getCode(): 400);
         } catch(ApiFormErrorException $e){
             $this->logger->error($e->getMessage(), ["uri" => $request->getUri(), "errors" => $e->getErrors()]);
             return new JsonResponse([
