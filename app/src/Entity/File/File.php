@@ -2,6 +2,7 @@
 
 namespace App\Entity\File;
 
+use App\Entity\Channel\Channel;
 use App\Entity\Guild\Guild;
 use App\Traits\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
@@ -44,14 +45,21 @@ class File
     /**
      * @var Guild
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\Guild\Guild", mappedBy="icon")
+     * @ORM\OneToOne(targetEntity="App\Entity\Guild\Guild", mappedBy="icon", cascade={"all"})
      */
     private Guild $guildIcon;
 
     /**
+     * @var Channel
+     *
+     * @ORM\OneToOne(targetEntity="App\Entity\Channel\Channel", mappedBy="icon", cascade={"all"})
+     */
+    private Channel $channelIcon;
+
+    /**
      * @var FileFormat
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\File\FileFormat", inversedBy="files", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\File\FileFormat", inversedBy="files", cascade={"all"})
      */
     private FileFormat $format;
 

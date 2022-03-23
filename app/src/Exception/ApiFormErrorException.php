@@ -2,6 +2,8 @@
 
 namespace App\Exception;
 
+use JetBrains\PhpStorm\Pure;
+
 class ApiFormErrorException extends \Exception
 {
     protected array $errors = [];
@@ -9,9 +11,9 @@ class ApiFormErrorException extends \Exception
     /**
      * @param array $errors
      */
-    public function __construct(array $errors = [])
+    #[Pure] public function __construct(array $errors = [])
     {
-        parent::__construct("errors",400);
+        parent::__construct("Form invalidation",400);
         $this->errors = $errors;
     }
 

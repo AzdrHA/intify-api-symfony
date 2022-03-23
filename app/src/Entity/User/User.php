@@ -7,6 +7,7 @@ use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -92,9 +93,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var UserStatus|null
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\User\UserStatus", inversedBy="user")
+     * @ORM\OneToOne(targetEntity="App\Entity\User\UserStatus", inversedBy="user", cascade={"all"})
      */
     private ?UserStatus $status = null;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\ManyToMany(targetEntity="App\Entity\Channel\Channel", mappedBy="recipients", cascade={"all"})
+     */
+    private Collection $privateChannels;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Guild\GuildMember", mappedBy="user", cascade={"all"})
+     */
+    private Collection $guildMembers;
+
+    #[Pure] public function __construct()
+    {
+        $this->guildsOwner = new ArrayCollection();
+        $this->messagesOwner = new ArrayCollection();
+        $this->privateChannels = new ArrayCollection();
+        $this->guildMembers = new ArrayCollection();
+    }
 
     /**
      * @return UserStatus|null
@@ -157,12 +180,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\OneToMany(targetEntity="App\Entity\Message\Message", mappedBy="owner")
      */
     private Collection $messagesOwner;
-
-    public function __construct()
-    {
-        $this->guildsOwner = new ArrayCollection();
-        $this->messagesOwner = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {

@@ -3,36 +3,28 @@
 namespace App\Service\Channel;
 
 use App\Entity\Channel\Channel;
-use App\Entity\Guild\Guild;
-use App\Service\DefaultService;
-use App\Utils\UtilsStr;
-use Symfony\Component\Form\FormFactoryInterface;
+use App\Service\Guild\GuildService;
+use App\Utils\UtilsNormalizer;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
-class ChannelService extends DefaultService
+class ChannelService
 {
-    public function __construct(FormFactoryInterface $formFactory)
+    private GuildService $guildService;
+    public function __construct(GuildService $guildService)
     {
-        $this->formFactory = $formFactory;
+        $this->guildService = $guildService;
     }
 
-    /**
-     * @param Guild $guild
-     * @return void
-     */
-    public function initializeDefaultChannel(Guild $guild): void
-    {
-        foreach ([Channel::GUILD_TEXT, Channel::GUILD_VOICE] as $channel)
-        {
-            $parent = new Channel();
-            $parent->setName(UtilsStr::ucFirst(Channel::inverse_type[$channel]). ' Channel');
-            $parent->setType(Channel::GUILD_CATEGORY);
-            $guild->addChannel($parent);
 
-            $child = new Channel();
-            $child->setName('General');
-            $child->setType($channel);
-            $child->setParent($parent);
-            $guild->addChannel($child);
-        }
+    /**
+     * @throws ExceptionInterface
+     */
+    public function serializeChannel(Channel $channel): array
+    {
+        $whiteList = ['id', 'type', 'name', 'topic', 'position', 'parent', 'recipients'];
+        $res = UtilsNormalizer::normalize($channel, [], [], $whiteList);
+        $res['guild'] = $this->guildService->serializeGuild($channel->getGuild());
+
+        return $res;
     }
 }

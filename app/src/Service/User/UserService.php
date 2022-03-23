@@ -3,27 +3,20 @@
 namespace App\Service\User;
 
 use App\Entity\User\User;
-use Exception;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use App\Utils\UtilsNormalizer;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class UserService
 {
-    private TokenStorageInterface $tokenStorage;
-
-    public function __construct(TokenStorageInterface $tokenStorage)
-    {
-        $this->tokenStorage = $tokenStorage;
-    }
+    const serializeWhitelist = [
+        'id', 'email', 'firstname', 'lastname', 'username', 'enabled', 'lastLoginAt', 'createdAt', 'updatedAt'
+    ];
 
     /**
-     * @return User|Exception
+     * @throws ExceptionInterface
      */
-    public function getUserOrException(): User|Exception
+    public function serializeUser(User $user): array
     {
-        $user = $this->tokenStorage->getToken()->getUser();
-        if ($user instanceof User)
-            return $user;
-
-        return new Exception("User not found", 404);
+        return UtilsNormalizer::normalize($user, [], [], self::serializeWhitelist);
     }
 }

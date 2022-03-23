@@ -3,7 +3,7 @@
 namespace App\Controller\Auth;
 
 use App\Controller\DefaultApiController;
-use App\Service\Auth\AuthService;
+use App\ServiceApi\Auth\AuthService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +24,21 @@ class AuthController extends DefaultApiController
         return $this->handleRequest($request, [
             'service' => $authService,
             'function' => 'register',
+            'args' => []
+        ]);
+    }
+
+    /**
+     * @Rest\Post("/login")
+     * @param Request $request
+     * @param AuthService $authService
+     * @return JsonResponse
+     */
+    public function login(Request $request, AuthService $authService): JsonResponse
+    {
+        return $this->handleRequest($request, [
+            'service' => $authService,
+            'function' => 'login',
             'args' => []
         ]);
     }

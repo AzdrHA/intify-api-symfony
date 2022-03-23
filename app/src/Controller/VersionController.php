@@ -7,8 +7,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class VersionController
- * @package App\Controller
  * @Rest\Route("/version")
  */
 class VersionController extends DefaultApiController

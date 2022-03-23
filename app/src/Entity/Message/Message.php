@@ -33,14 +33,14 @@ class Message
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="messagesOwner", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="messagesOwner", cascade={"all"})
      */
     private User $owner;
 
     /**
      * @var Channel
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Channel\Channel", inversedBy="messages", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Channel\Channel", inversedBy="messages", cascade={"all"})
      */
     private Channel $channel;
 

@@ -3,48 +3,29 @@
 namespace App\Service\Guild;
 
 use App\Entity\Guild\Guild;
-use App\Exception\ApiFormErrorException;
-use App\Form\Guild\CreateGuildType;
-use App\Manager\Guild\GuildManager;
-use App\Service\Channel\ChannelService;
-use App\Service\DefaultService;
 use App\Service\User\UserService;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\Request;
+use App\Utils\UtilsNormalizer;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
-class GuildService extends DefaultService
+class GuildService
 {
     private UserService $userService;
-    private GuildManager $guildManager;
-    private ChannelService $channelService;
-    public function __construct(
-        FormFactoryInterface $formFactory, UserService $userService, GuildManager $guildManager, ChannelService $channelService
-    ) {
-        $this->formFactory = $formFactory;
+    public function __construct(UserService $userService)
+    {
         $this->userService = $userService;
-        $this->guildManager = $guildManager;
-        $this->channelService = $channelService;
     }
 
+    const serializeWhitelist = [
+        'id', 'icon', 'owner', 'name', 'createdAt', 'updatedAt'
+    ];
+
     /**
-     * @param Request $request
-     * @return string[]
-     * @throws ApiFormErrorException|ExceptionInterface
+     * @throws ExceptionInterface
      */
-    public function createGuild(Request $request): array
+    public function serializeGuild(Guild $guild): array
     {
-        $guild = new Guild();
-
-        $closure = function () use ($guild)
-        {
-            $guild->setOwner($this->userService->getUserOrException());
-            $this->channelService->initializeDefaultChannel($guild);
-            $this->guildManager->save($guild);
-        };
-
-        $this->handleForm($request, CreateGuildType::class, $guild, $closure);
-
-        return $this->normalizeSingle($guild);
+        $res = UtilsNormalizer::normalize($guild, [], [], self::serializeWhitelist);
+        $res['owner'] = $this->userService->serializeUser($guild->getOwner());
+        return $res;
     }
 }

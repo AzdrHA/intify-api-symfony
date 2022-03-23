@@ -2,11 +2,13 @@
 
 namespace App\Entity\Channel;
 
+use App\Entity\File\File;
 use App\Entity\Guild\Guild;
 use App\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -28,7 +30,7 @@ class Channel
         self::GUILD_CATEGORY => 'category'
     ];
 
-    const type_list = [self::GUILD_TEXT, self::DM, self::GUILD_VOICE, self::GROUP_DM, self::GUILD_CATEGORY];
+    const CHANNEL_TYPES = [self::GUILD_TEXT, self::DM, self::GUILD_VOICE, self::GROUP_DM, self::GUILD_CATEGORY];
 
     use TimestampableTrait;
 
@@ -51,7 +53,6 @@ class Channel
      * @var int|null
      *
      * @ORM\Column(type="integer")
-     * @Assert\NotNull(groups={"guild"})
      */
     private ?int $position = 0;
 
@@ -68,7 +69,6 @@ class Channel
      * @var string|null
      *
      * @ORM\Column(type="string", length=100, nullable=true)
-     * @Assert\NotNull(groups={"guild"})
      * @Assert\Length(min=1, max=100, groups={"guild"})
      */
     private ?string $topic = null;
@@ -103,9 +103,24 @@ class Channel
      */
     private ?Channel $parent = null;
 
+    /**
+     * @var Collection
+     *
+     * @ORM\ManyToMany(targetEntity="App\Entity\User\User", inversedBy="privateChannels", cascade={"all"})
+     */
+    private Collection $recipients;
+
+    /**
+     * @var File|null
+     *
+     * @ORM\OneToOne(targetEntity="App\Entity\File\File", inversedBy="channelIcon", cascade={"all"})
+     */
+    private ?File $icon = null;
+
     public function __construct()
     {
         $this->children = new ArrayCollection();
+        $this->recipients = new ArrayCollection();
     }
 
     /**
@@ -137,7 +152,7 @@ class Channel
      */
     public function setType(int $type): void
     {
-        if (!in_array($type, self::type_list)) {
+        if (!in_array($type, self::CHANNEL_TYPES)) {
             throw new \InvalidArgumentException("Invalid type");
         }
 
@@ -229,8 +244,13 @@ class Channel
         return $this->type === self::GUILD_TEXT;
     }
 
-    public function isGuildChannel(): bool
+    public function guildChannel(): array
     {
-        return in_array($this->type, array_diff(self::type_list, [self::DM]));
+        return array_diff(self::CHANNEL_TYPES, [self::DM]);
+    }
+
+    #[Pure] public function isGuildChannel(): bool
+    {
+        return in_array($this->type, $this->guildChannel());
     }
 }

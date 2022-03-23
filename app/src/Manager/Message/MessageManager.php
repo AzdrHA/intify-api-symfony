@@ -12,4 +12,9 @@ class MessageManager extends DefaultManager
     {
         parent::__construct($em, $repository);
     }
+
+    public function getList(int $id): array
+    {
+        return $this->repository->findBy(['channel' => $id]);
+    }
 }

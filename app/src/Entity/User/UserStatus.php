@@ -34,7 +34,7 @@ class UserStatus
     /**
      * @var User
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\User\User", mappedBy="status")
+     * @ORM\OneToOne(targetEntity="App\Entity\User\User", mappedBy="status", cascade={"all"})
      */
     private User $user;
 

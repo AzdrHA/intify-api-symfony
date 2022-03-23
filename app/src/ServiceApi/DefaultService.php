@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\ServiceApi;
 
 use App\Exception\ApiFormErrorException;
 use App\Utils\UtilsForm;
@@ -14,12 +14,6 @@ use Symfony\Component\Serializer\Exception\ExceptionInterface;
 class DefaultService
 {
     protected ?FormFactoryInterface $formFactory = null;
-
-    protected array $listBlackList = [];
-    protected array $listWhiteList = [];
-    protected array $singleWhiteList = [];
-    protected array $singleBlackList = [];
-    protected array $commonBlackList = ['password'];
 
     /**
      * @param Request $request
@@ -45,21 +39,5 @@ class DefaultService
         $errors = UtilsForm::getErrors($form);
         if ($errors)
             throw new ApiFormErrorException($errors);
-    }
-
-    /**
-     * @param object $object
-     * @param array $blackListExtra
-     * @param array $whiteListExtra
-     * @return array|ArrayObject|bool|float|int|string|null
-     * @throws ExceptionInterface
-     */
-    public function normalizeSingle(object $object, array $blackListExtra = [], array $whiteListExtra = []): float|array|bool|ArrayObject|int|string|null
-    {
-        $mergedWhite = array_merge($this->singleWhiteList ?? $this->listWhiteList,$whiteListExtra);
-        return UtilsNormalizer::normalize($object, [],
-            array_merge(($this->singleBlackList ?? $this->listBlackList),$blackListExtra, $this->commonBlackList),
-            count($mergedWhite) ? $mergedWhite : null
-        );
     }
 }

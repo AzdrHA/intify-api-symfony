@@ -39,7 +39,7 @@ class Guild
     /**
      * @var File|null
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\File\File", inversedBy="guildIcon")
+     * @ORM\OneToOne(targetEntity="App\Entity\File\File", inversedBy="guildIcon", cascade={"all"})
      */
     private ?File $icon = null;
 
@@ -57,9 +57,17 @@ class Guild
      */
     private Collection $channels;
 
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Guild\GuildMember", mappedBy="guild", cascade={"all"})
+     */
+    private Collection $guildMembers;
+
     public function __construct()
     {
         $this->channels = new ArrayCollection();
+        $this->guildMembers = new ArrayCollection();
     }
 
     /**

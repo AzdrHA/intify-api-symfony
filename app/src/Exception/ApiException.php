@@ -2,31 +2,21 @@
 
 namespace App\Exception;
 
-use Throwable;
-
 class ApiException extends \Exception
 {
-    private string $jsonError = "";
+    private array $jsonError = [];
 
-    public function __construct($message = "Une erreur est survenue", $code = 0, Throwable $previous = null, string $jsonError = "")
+    public function __construct($message = "Une erreur est survenue", $code = 0, array $jsonError = [])
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code);
         $this->jsonError = $jsonError;
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getJsonError(): string
+    public function getJsonError(): array
     {
         return $this->jsonError;
-    }
-
-    /**
-     * @param string $jsonError
-     */
-    public function setJsonError(string $jsonError): void
-    {
-        $this->jsonError = $jsonError;
     }
 }

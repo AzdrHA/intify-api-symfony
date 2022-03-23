@@ -31,7 +31,7 @@ class FileFormat
     /**
      * @var array
      *
-     * @ORM\OneToMany(targetEntity="App\Entity\File\File", mappedBy="format")
+     * @ORM\OneToMany(targetEntity="App\Entity\File\File", mappedBy="format", cascade={"all"})
      */
     private array $files;
 

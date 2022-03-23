@@ -36,19 +36,43 @@ abstract class DefaultApiController extends AbstractController
 
             $res = $service->$fn($request, ...$fn_args);
         } catch(ApiException $e){
-            $this->logger->error($e->getMessage(), ["uri" => $request->getUri()]);
-            return new JsonResponse(["error" => $e->getMessage()], $e->getCode()>400 ? $e->getCode(): 400);
-        } catch(ApiFormErrorException $e){
-            $this->logger->error($e->getMessage(), ["uri" => $request->getUri(), "errors" => $e->getErrors()]);
+            if ($this->getParameter('env') === "dev")
+                dump($e);
+
+            $this->logger->error($e->getMessage(), [
+                "uri" => $request->getUri()
+            ]);
+
+            $httpCode = max($e->getCode(), 400);
             return new JsonResponse([
-                "error" => $e->getMessage() ?? "Une erreur est survenue",
-                "errors_detail" => $e->getErrors()
-            ], max($e->getCode(), 400));
+                "code" => $httpCode,
+                "message" => $e->getMessage() ?: "Une erreur est survenue",
+                "message_detail" => $e->getJsonError()
+            ], $httpCode);
+        } catch(ApiFormErrorException $e){
+            if ($this->getParameter('env') === "dev")
+                dump($e);
+
+            $this->logger->error($e->getMessage(), [
+                "uri" => $request->getUri(),
+                "errors" => $e->getErrors()
+            ]);
+
+            $httpCode = max($e->getCode(), 400);
+            return new JsonResponse([
+                "code" => $httpCode,
+                "message" => $e->getMessage() ?: "Une erreur est survenue",
+                "message_detail" => $e->getErrors()
+            ], $httpCode);
         } catch (\Exception $e) {
             if ($this->getParameter('env') === "dev")
                 dump($e);
 
-            return new JsonResponse(['error' => 'An error has occurred'], 400);
+            $httpCode = 400;
+            return new JsonResponse([
+                "code" => $httpCode,
+                "message" => 'An error has occurred',
+            ], $httpCode);
         } finally {
             $endTime = microtime(true);
             $time = $endTime-$beginTime;

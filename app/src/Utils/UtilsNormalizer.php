@@ -16,10 +16,10 @@ abstract class UtilsNormalizer
      * @param array $callbacks
      * @param array $ignored_attrs
      * @param array|null $whitelist_attrs
-     * @return array|ArrayObject|bool|float|int|string|null
+     * @return array
      * @throws ExceptionInterface
      */
-    static function normalize(?object $object, array $callbacks = [], array $ignored_attrs = [], ?array $whitelist_attrs = null): float|array|bool|ArrayObject|int|string|null
+    static function normalize(?object $object, array $callbacks = [], array $ignored_attrs = [], ?array $whitelist_attrs = null): array
     {
         if(!$object)
             return [];
