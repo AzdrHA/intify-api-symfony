@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  mariadb_api:
+    image: mariadb
+    env_file:
+      - .env
+    volumes:
+      - mariadb_volume_api_test:/var/lib/mysql
+      - ./docker/mariadb/custom.cnf:/etc/mysql/conf.d/custom.cnf
+    ports:
+      - "${DB_PORT}:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+
+  nginx_api:
+    image: nginx:latest
+    depends_on:
+      - php_api
+    links:
+      - php_api
+    volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./app/public:/srv/app/public:ro
+    ports:
+      - "86:80"
+      - "443:443"
+
+  php_api:
+    build:
+      context: ./docker/php
+    tty: true
+    expose:
+      - 8000
+    depends_on:
+      - mariadb_api
+      - maildev_api
+    links:
+      - mariadb_api:mariadb_api
+      - maildev_api
+    volumes:
+      - ./app:/srv/app:rw
+      - ./docker/php/fpm-conf.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+      - ./docker/php/symfony.ini:/usr/local/etc/php/conf.d/symfony.ini
+      - php_cache_composer:/.composer
+    environment:
+      - COMPOSER_HOME=/srv/app/root_composer
+      - APP_ENV=${APP_ENV}
+      - APP_SECRET=${APP_SECRET}
+      - DATABASE_URL=mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:3306/${DB_NAME}?serverVersion=mariadb-10.4.11
+    env_file:
+      - .env
+
+  maildev_api:
+    image: djfarrelly/maildev
+    ports:
+      - '1080:80'
+      - '1025:25'
+
+volumes:
+  php_cache:
+  php_cache_composer:
+  mariadb_volume_api_test:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './mariadb'
