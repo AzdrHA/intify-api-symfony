@@ -35,7 +35,6 @@ abstract class DefaultManager
             if (!$entity->getCreatedAt() && method_exists($entity, 'setCreatedAt'))
                 $entity->setCreatedAt(new DateTime());
 
-
         if (method_exists($entity, "setUpdatedAt"))
             $entity->setUpdatedAt(new DateTime());
 
