@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20220323212046 extends AbstractMigration
+final class Version20220324163420 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -26,8 +26,10 @@ final class Version20220323212046 extends AbstractMigration
         $this->addSql('ALTER TABLE channel_user ADD CONSTRAINT FK_11C77537A76ED395 FOREIGN KEY (user_id) REFERENCES user (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE guild_member ADD CONSTRAINT FK_7FD58C97A76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE guild_member ADD CONSTRAINT FK_7FD58C975F2131EF FOREIGN KEY (guild_id) REFERENCES guild (id)');
-        $this->addSql('ALTER TABLE channel ADD icon_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE channel ADD parent_id INT DEFAULT NULL, ADD icon_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE channel ADD CONSTRAINT FK_A2F98E47727ACA70 FOREIGN KEY (parent_id) REFERENCES channel (id)');
         $this->addSql('ALTER TABLE channel ADD CONSTRAINT FK_A2F98E4754B9D732 FOREIGN KEY (icon_id) REFERENCES file (id)');
+        $this->addSql('CREATE INDEX IDX_A2F98E47727ACA70 ON channel (parent_id)');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_A2F98E4754B9D732 ON channel (icon_id)');
     }
 
@@ -36,9 +38,11 @@ final class Version20220323212046 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP TABLE channel_user');
         $this->addSql('DROP TABLE guild_member');
+        $this->addSql('ALTER TABLE channel DROP FOREIGN KEY FK_A2F98E47727ACA70');
         $this->addSql('ALTER TABLE channel DROP FOREIGN KEY FK_A2F98E4754B9D732');
+        $this->addSql('DROP INDEX IDX_A2F98E47727ACA70 ON channel');
         $this->addSql('DROP INDEX UNIQ_A2F98E4754B9D732 ON channel');
-        $this->addSql('ALTER TABLE channel DROP icon_id, CHANGE name name VARCHAR(100) DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, CHANGE topic topic VARCHAR(100) DEFAULT NULL COLLATE `utf8mb4_unicode_ci`');
+        $this->addSql('ALTER TABLE channel DROP parent_id, DROP icon_id, CHANGE name name VARCHAR(100) DEFAULT NULL COLLATE `utf8mb4_unicode_ci`, CHANGE topic topic VARCHAR(100) DEFAULT NULL COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('ALTER TABLE file CHANGE name name VARCHAR(255) NOT NULL COLLATE `utf8mb4_unicode_ci`, CHANGE path path VARCHAR(255) NOT NULL COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('ALTER TABLE file_format CHANGE mimetype mimetype VARCHAR(255) NOT NULL COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('ALTER TABLE guild CHANGE name name VARCHAR(100) NOT NULL COLLATE `utf8mb4_unicode_ci`');

@@ -4,7 +4,7 @@ namespace App\Utils;
 
 use Symfony\Component\Form\FormInterface;
 
-class UtilsForm
+abstract class UtilsForm
 {
     /**
      * @param FormInterface $form
