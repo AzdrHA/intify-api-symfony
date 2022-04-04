@@ -117,7 +117,7 @@ class Channel
      */
     private ?File $icon = null;
 
-    public function __construct()
+    #[Pure] public function __construct()
     {
         $this->children = new ArrayCollection();
         $this->recipients = new ArrayCollection();

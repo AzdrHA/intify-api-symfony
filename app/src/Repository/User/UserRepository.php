@@ -16,7 +16,6 @@ class UserRepository extends DefaultRepository implements PasswordUpgraderInterf
         parent::__construct($registry, User::class);
     }
 
-
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
         if (!$user instanceof User) {
