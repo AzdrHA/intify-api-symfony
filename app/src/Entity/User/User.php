@@ -33,7 +33,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @ORM\Column(type="string", unique=true)
      * @Assert\Email()
-     * @Assert\NotNull()
+     * @Assert\NotNull(groups={"register", "login"})
      */
     private string $email;
 
@@ -41,7 +41,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      *
      * @ORM\Column(type="string")
-     * @Assert\NotNull()
+     * @Assert\NotNull(groups={"register"})
      */
     private string $firstname;
 
@@ -49,7 +49,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      *
      * @ORM\Column(type="string")
-     * @Assert\NotNull()
+     * @Assert\NotNull(groups={"register"})
      */
     private string $lastname;
 
@@ -57,7 +57,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      *
      * @ORM\Column(type="string")
-     * @Assert\NotNull()
+     * @Assert\NotNull(groups={"register"})
      */
     private string $username;
 
@@ -72,7 +72,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string
      *
      * @ORM\Column(type="string")
-     * @Assert\NotNull()
+     * @Assert\NotNull(groups={"register", "login"})
      */
     private string $password;
 
@@ -138,7 +138,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection
      */
-    public function getGuildsOwner(): ArrayCollection|Collection
+    public function getGuildsOwner(): Collection
     {
         return $this->guildsOwner;
     }
@@ -146,7 +146,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @param Collection $guildsOwner
      */
-    public function setGuildsOwner(ArrayCollection|Collection $guildsOwner): void
+    public function setGuildsOwner(Collection $guildsOwner): void
     {
         $this->guildsOwner = $guildsOwner;
     }
@@ -154,7 +154,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection
      */
-    public function getMessagesOwner(): ArrayCollection|Collection
+    public function getMessagesOwner(): Collection
     {
         return $this->messagesOwner;
     }
@@ -162,7 +162,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @param Collection $messagesOwner
      */
-    public function setMessagesOwner(ArrayCollection|Collection $messagesOwner): void
+    public function setMessagesOwner(Collection $messagesOwner): void
     {
         $this->messagesOwner = $messagesOwner;
     }
