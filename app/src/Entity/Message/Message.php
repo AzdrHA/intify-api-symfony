@@ -5,6 +5,7 @@ namespace App\Entity\Message;
 use App\Entity\Channel\Channel;
 use App\Entity\User\User;
 use App\Traits\TimestampableTrait;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -43,6 +44,13 @@ class Message
      * @ORM\ManyToOne(targetEntity="App\Entity\Channel\Channel", inversedBy="messages", cascade={"all"})
      */
     private Channel $channel;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Message\MessageAttachment", mappedBy="message", cascade={"all"})
+     */
+    private Collection $messageAttachments;
 
     /**
      * @return int

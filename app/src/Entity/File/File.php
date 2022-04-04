@@ -4,6 +4,7 @@ namespace App\Entity\File;
 
 use App\Entity\Channel\Channel;
 use App\Entity\Guild\Guild;
+use App\Entity\Message\MessageAttachment;
 use App\Traits\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -55,6 +56,13 @@ class File
      * @ORM\OneToOne(targetEntity="App\Entity\Channel\Channel", mappedBy="icon", cascade={"all"})
      */
     private Channel $channelIcon;
+
+    /**
+     * @var MessageAttachment
+     *
+     * @ORM\OneToOne(targetEntity="App\Entity\Message\MessageAttachment", inversedBy="file", cascade={"all"})
+     */
+    private MessageAttachment $messageAttachment;
 
     /**
      * @var FileFormat
