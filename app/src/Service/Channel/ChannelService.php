@@ -2,28 +2,22 @@
 
 namespace App\Service\Channel;
 
-use App\Entity\Channel\Channel;
-use App\Service\Guild\GuildService;
 use App\Utils\UtilsNormalizer;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class ChannelService
 {
-    private GuildService $guildService;
-    public function __construct(GuildService $guildService)
-    {
-        $this->guildService = $guildService;
-    }
-
-
     /**
      * @throws ExceptionInterface
      */
-    public function serializeChannel(Channel $channel): array
+    public function serializeChannel(ArrayCollection|Collection $channels): array
     {
         $whiteList = ['id', 'type', 'name', 'topic', 'position', 'parent', 'recipients'];
-        $res = UtilsNormalizer::normalize($channel, [], [], $whiteList);
-        $res['guild'] = $this->guildService->serializeGuild($channel->getGuild());
+        $res = [];
+        foreach ($channels as $channel)
+            $res[] = UtilsNormalizer::normalize($channel, [], [], $whiteList);
 
         return $res;
     }
