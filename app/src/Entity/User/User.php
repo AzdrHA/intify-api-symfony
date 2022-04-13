@@ -111,68 +111,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private Collection $guildMembers;
 
-    #[Pure] public function __construct()
-    {
-        $this->guildsOwner = new ArrayCollection();
-        $this->messagesOwner = new ArrayCollection();
-        $this->privateChannels = new ArrayCollection();
-        $this->guildMembers = new ArrayCollection();
-    }
-
-    /**
-     * @return UserStatus|null
-     */
-    public function getStatus(): ?UserStatus
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param UserStatus|null $status
-     */
-    public function setStatus(?UserStatus $status): void
-    {
-        $this->status = $status;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getGuildsOwner(): Collection
-    {
-        return $this->guildsOwner;
-    }
-
-    /**
-     * @param Collection $guildsOwner
-     */
-    public function setGuildsOwner(Collection $guildsOwner): void
-    {
-        $this->guildsOwner = $guildsOwner;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getMessagesOwner(): Collection
-    {
-        return $this->messagesOwner;
-    }
-
-    /**
-     * @param Collection $messagesOwner
-     */
-    public function setMessagesOwner(Collection $messagesOwner): void
-    {
-        $this->messagesOwner = $messagesOwner;
-    }
-
     /**
      * @var Collection
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Guild\Guild", mappedBy="owner")
      */
-    private Collection $guildsOwner;
+    private Collection $guildOwned;
 
     /**
      * @var Collection
@@ -180,6 +124,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\OneToMany(targetEntity="App\Entity\Message\Message", mappedBy="owner")
      */
     private Collection $messagesOwner;
+
+    #[Pure] public function __construct()
+    {
+        $this->guildOwned = new ArrayCollection();
+        $this->messagesOwner = new ArrayCollection();
+        $this->privateChannels = new ArrayCollection();
+        $this->guildMembers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -329,5 +281,85 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastLoginAt(?DateTime $lastLoginAt): void
     {
         $this->lastLoginAt = $lastLoginAt;
+    }
+
+    /**
+     * @return UserStatus|null
+     */
+    public function getStatus(): ?UserStatus
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param UserStatus|null $status
+     */
+    public function setStatus(?UserStatus $status): void
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getPrivateChannels(): Collection
+    {
+        return $this->privateChannels;
+    }
+
+    /**
+     * @param Collection $privateChannels
+     */
+    public function setPrivateChannels(Collection $privateChannels): void
+    {
+        $this->privateChannels = $privateChannels;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getGuildMembers(): Collection
+    {
+        return $this->guildMembers;
+    }
+
+    /**
+     * @param Collection $guildMembers
+     */
+    public function setGuildMembers(Collection $guildMembers): void
+    {
+        $this->guildMembers = $guildMembers;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getGuildOwned(): Collection
+    {
+        return $this->guildOwned;
+    }
+
+    /**
+     * @param Collection $guildOwned
+     */
+    public function setGuildOwned(Collection $guildOwned): void
+    {
+        $this->guildOwned = $guildOwned;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getMessagesOwner(): Collection
+    {
+        return $this->messagesOwner;
+    }
+
+    /**
+     * @param Collection $messagesOwner
+     */
+    public function setMessagesOwner(Collection $messagesOwner): void
+    {
+        $this->messagesOwner = $messagesOwner;
     }
 }

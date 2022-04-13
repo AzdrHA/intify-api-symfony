@@ -47,7 +47,7 @@ class Guild
     /**
      * @var User|null
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="guildsOwner", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="guildOwned", cascade={"all"})
      */
     private ?User $owner = null;
 
