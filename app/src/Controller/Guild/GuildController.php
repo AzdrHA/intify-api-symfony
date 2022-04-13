@@ -47,4 +47,21 @@ class GuildController extends DefaultApiController
             'args' => [$guild]
         ]);
     }
+
+    /**
+     * @Rest\Get ("/{guild}", requirements={"guild":"\d+"})
+     * @ParamConverter("guild", class="App\Entity\Guild\Guild", options={"id"="guild"})
+     * @param Request $request
+     * @param Guild $guild
+     * @param GuildService $guildService
+     * @return JsonResponse
+     */
+    public function getGuild(Request $request, Guild $guild, GuildService $guildService): JsonResponse
+    {
+        return $this->handleRequest($request, [
+            'service' => $guildService,
+            'function' => 'getGuild',
+            'args' => [$guild],
+        ]);
+    }
 }

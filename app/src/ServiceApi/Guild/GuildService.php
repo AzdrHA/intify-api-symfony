@@ -29,6 +29,7 @@ class GuildService extends DefaultService
      * @param GuildManager $guildManager
      * @param ChannelService $channelService
      * @param BaseGuildService $guildService
+     * @param GuildMemberManager $guildMemberManager
      */
     public function __construct(
         FormFactoryInterface $formFactory, UserService $userService, GuildManager $guildManager,
@@ -61,6 +62,17 @@ class GuildService extends DefaultService
 
         $this->handleForm($request, CreateGuildType::class, $guild, $closure);
 
+        return $this->guildService->serializeGuild($guild);
+    }
+
+    /**
+     * @param Request $request
+     * @param Guild $guild
+     * @return array
+     * @throws ExceptionInterface
+     */
+    public function getGuild(Request $request, Guild $guild): array
+    {
         return $this->guildService->serializeGuild($guild);
     }
 }
