@@ -20,7 +20,6 @@ class AuthService
     public function createToken(User $user): string
     {
         return $this->encoder->encode([
-            'id' => $user->getId(),
             'email' => $user->getEmail(),
         ]);
     }
