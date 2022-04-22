@@ -24,6 +24,11 @@ abstract class DefaultManager
         $this->repository = $repository;
     }
 
+    public function getRepository(): EntityRepository
+    {
+        return $this->repository;
+    }
+
     /**
      * @param object $entity
      * @param bool $flush
