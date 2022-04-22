@@ -31,4 +31,20 @@ class MessageController extends DefaultApiController
             'args' => [$channel]
         ]);
     }
+
+    /**
+     * @Rest\Get ("/messages")
+     * @param Request $request
+     * @param Channel $channel
+     * @param MessageService $messageService
+     * @return JsonResponse
+     */
+    public function getMessageByChannel(Request $request, Channel $channel, MessageService $messageService): JsonResponse
+    {
+        return $this->handleRequest($request, [
+            'service' => $messageService,
+            'function' => 'getMessageByChannel',
+            'args' => [$channel]
+        ]);
+    }
 }

@@ -11,6 +11,7 @@ use App\Manager\Message\MessageManager;
 use App\Service\Message\MessageService as BaseMessageService;
 use App\ServiceApi\DefaultService;
 use App\ServiceApi\User\UserService;
+use Doctrine\ORM\AbstractQuery;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
@@ -62,5 +63,19 @@ class MessageService extends DefaultService
         $this->handleForm($request, MessageCreateType::class, $message, $callback);
 
         return $this->messageService->serializeMessage($message);
+    }
+
+    /**
+     * @param Request $request
+     * @param Channel $channel
+     * @return array
+     */
+    public function getMessageByChannel(Request $request, Channel $channel): array
+    {
+        return $this->messageManager->getRepository()->createQueryBuilder('m')
+            ->addSelect('owner')
+            ->leftJoin('m.owner', 'owner')
+            ->getQuery()
+            ->getResult(AbstractQuery::HYDRATE_ARRAY);
     }
 }
