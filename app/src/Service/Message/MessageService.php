@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Exception\ExceptionInterface;
 class MessageService
 {
     const serializeWhitelist = [
-        'id', 'owner', 'channel', 'content', 'lastLoginAt', 'createdAt', 'updatedAt'
+        'id', 'owner', 'channel', 'content', 'createdAt', 'updatedAt'
     ];
 
     /**
