@@ -8,6 +8,9 @@ services:
     volumes:
       - mariadb_volume_api_test:/var/lib/mysql
       - ./docker/mariadb/custom.cnf:/etc/mysql/conf.d/custom.cnf
+    networks:
+      - api_internal
+      - db_proxy
     ports:
       - "${DB_PORT}:3306"
     environment:
@@ -18,6 +21,8 @@ services:
 
   nginx_api:
     image: nginx:latest
+    networks:
+      - proxy
     depends_on:
       - php_api
     links:
@@ -36,12 +41,15 @@ services:
     tty: true
     expose:
       - 8000
+    links:
+      - mariadb_api:mariadb
+      - mercure_api:mercure
     depends_on:
       - mariadb_api
-      - maildev_api
-    links:
-      - mariadb_api:mariadb_api
-      - maildev_api
+      - mercure_api
+    networks:
+      - proxy
+      - api_internal
     volumes:
       - ./app:/srv/app:rw
       - ./docker/php/fpm-conf.conf:/usr/local/etc/php-fpm.d/www.conf:ro
@@ -55,11 +63,20 @@ services:
     env_file:
       - .env
 
-  maildev_api:
-    image: djfarrelly/maildev
+  mercure_api:
+    image: dunglas/mercure
+    environment:
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_PUBLISHER_JWT_KEY}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_SUBSCRIBER_JWT_KEY}
+      SERVER_NAME: ':80'
+    command: /usr/bin/caddy run -config /etc/caddy/Caddyfile.dev
     ports:
-      - '1080:80'
-      - '1025:25'
+      - "1080:80"
+    networks:
+      - proxy
+    volumes:
+      - mercure_volume_api:/data
+      - ./docker/mercure_config:/config
 
 volumes:
   php_cache:
@@ -70,3 +87,17 @@ volumes:
       type: 'none'
       o: 'bind'
       device: './mariadb'
+  mercure_volume_api:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './mercure'
+
+networks:
+  api_internal:
+    internal: true
+  proxy:
+    external: true
+  db_proxy:
+    external: true
