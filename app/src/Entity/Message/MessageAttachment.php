@@ -22,6 +22,7 @@ class MessageAttachment
      * @ORM\CustomIdGenerator(class="App\Doctrine\SnowflakeGenerator")
      */
     private string $id;
+
     /**
      * @var Message
      *
