@@ -2,53 +2,53 @@
 
 namespace App\Traits;
 
-use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 trait TimestampableTrait
 {
     /**
-     * @var DateTime|null
+     * @var DateTimeInterface|null
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected ?DateTime $createdAt = null;
+    protected ?DateTimeInterface $createdAt = null;
 
     /**
-     * @var DateTime|null
+     * @var DateTimeInterface|null
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected ?DateTime $updatedAt = null;
+    protected ?DateTimeInterface $updatedAt = null;
 
     /**
-     * @return DateTime|null
+     * @return DateTimeInterface|null
      */
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->createdAt;
     }
 
     /**
-     * @param DateTime|null $createdAt
+     * @param DateTimeInterface|null $createdAt
      */
-    public function setCreatedAt(?DateTime $createdAt): void
+    public function setCreatedAt(?DateTimeInterface $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
     /**
-     * @return DateTime|null
+     * @return DateTimeInterface|null
      */
-    public function getUpdatedAt(): ?DateTime
+    public function getUpdatedAt(): ?DateTimeInterface
     {
         return $this->updatedAt;
     }
 
     /**
-     * @param DateTime|null $updatedAt
+     * @param DateTimeInterface|null $updatedAt
      */
-    public function setUpdatedAt(?DateTime $updatedAt): void
+    public function setUpdatedAt(?DateTimeInterface $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
