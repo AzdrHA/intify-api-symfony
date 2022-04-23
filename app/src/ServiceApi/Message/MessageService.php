@@ -8,9 +8,11 @@ use App\Exception\ApiException;
 use App\Exception\ApiFormErrorException;
 use App\Form\Message\MessageCreateType;
 use App\Manager\Message\MessageManager;
+use App\Service\Mercure\MercureService;
 use App\Service\Message\MessageService as BaseMessageService;
 use App\ServiceApi\DefaultService;
 use App\ServiceApi\User\UserService;
+use App\Utils\UtilsNormalizer;
 use Doctrine\ORM\AbstractQuery;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,21 +23,17 @@ class MessageService extends DefaultService
     private UserService $userService;
     private MessageManager $messageManager;
     private BaseMessageService $messageService;
+    private MercureService $mercureService;
 
-    /**
-     * @param FormFactoryInterface $formFactory
-     * @param UserService $userService
-     * @param MessageManager $messageManager
-     * @param BaseMessageService $messageService
-     */
     public function __construct(
         FormFactoryInterface $formFactory, UserService $userService, MessageManager $messageManager,
-        BaseMessageService $messageService
+        BaseMessageService $messageService, MercureService $mercureService
     ){
         $this->formFactory = $formFactory;
         $this->userService = $userService;
         $this->messageManager = $messageManager;
         $this->messageService = $messageService;
+        $this->mercureService = $mercureService;
     }
 
     /**
@@ -58,6 +56,7 @@ class MessageService extends DefaultService
             $message->setOwner($this->userService->getUserOrException());
             $message->setChannel($channel);
             $this->messageManager->save($message);
+            $this->mercureService->makeRequest(sprintf(MercureService::CREATE_MESSAGE, $channel->getId()), $this->messageService->serializeMessage($message));
         };
 
         $this->handleForm($request, MessageCreateType::class, $message, $callback);
@@ -72,10 +71,23 @@ class MessageService extends DefaultService
      */
     public function getMessageByChannel(Request $request, Channel $channel): array
     {
-        return $this->messageManager->getRepository()->createQueryBuilder('m')
-            ->addSelect('owner')
+        $messages = $this->messageManager->getRepository()->createQueryBuilder('m')
+            ->addSelect('owner', 'members')
             ->leftJoin('m.owner', 'owner')
+            ->leftJoin('owner.guildMembers', 'members')
+            ->leftJoin('members.guild', 'guild')
+            ->leftJoin('m.channel', 'channel')
+            ->where('channel.id = :channel_id')
+            ->andWhere('guild.id = :guild_id')
+            ->setParameters([
+                'channel_id' => $channel->getId(),
+                'guild_id' => $channel->getGuild()->getId()
+            ])
             ->getQuery()
             ->getResult(AbstractQuery::HYDRATE_ARRAY);
+
+        UtilsNormalizer::normalizeArray($messages);
+
+        return $messages;
     }
 }
