@@ -17,11 +17,14 @@ class Message
     use TimestampableTrait;
 
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @var string
+     *
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\Column(type="bigint", unique=true, nullable=false)
+     * @ORM\CustomIdGenerator(class="App\Doctrine\SnowflakeGenerator")
      */
-    private int $id;
+    private string $id;
 
     /**
      * @var string
@@ -52,18 +55,19 @@ class Message
      */
     private Collection $messageAttachments;
 
+
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
+     * @param string $id
      */
-    public function setId(int $id): void
+    public function setId(string $id): void
     {
         $this->id = $id;
     }

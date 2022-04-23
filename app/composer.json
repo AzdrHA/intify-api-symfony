@@ -17,6 +17,7 @@
         "doctrine/orm": "^2.11",
         "friendsofsymfony/rest-bundle": "^3.3",
         "gesdinet/jwt-refresh-token-bundle": "^1.0",
+        "godruoyi/php-snowflake": "^2.0",
         "jms/serializer-bundle": "^4.0",
         "lexik/jwt-authentication-bundle": "^2.14",
         "nelmio/cors-bundle": "^2.2",

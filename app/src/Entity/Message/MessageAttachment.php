@@ -14,12 +14,14 @@ class MessageAttachment
     use TimestampableTrait;
 
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @var string
+     *
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\Column(type="bigint", unique=true, nullable=false)
+     * @ORM\CustomIdGenerator(class="App\Doctrine\SnowflakeGenerator")
      */
-    private int $id;
-
+    private string $id;
     /**
      * @var Message
      *
@@ -33,4 +35,20 @@ class MessageAttachment
      * @ORM\OneToOne(targetEntity="App\Entity\File\File", mappedBy="messageAttachment", cascade={"all"})
      */
     private File $file;
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
 }

@@ -20,13 +20,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     use TimestampableTrait;
 
     /**
-     * @var int|null
+     * @var string
      *
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\Column(type="bigint", unique=true, nullable=false)
+     * @ORM\CustomIdGenerator(class="App\Doctrine\SnowflakeGenerator")
      */
-    private ?int $id;
+    private string $id;
 
     /**
      * @var string
@@ -133,9 +134,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->guildMembers = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    /**
+     * @return string
+     */
+    public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId(string $id): void
+    {
+        $this->id = $id;
     }
 
     public function getEmail(): ?string

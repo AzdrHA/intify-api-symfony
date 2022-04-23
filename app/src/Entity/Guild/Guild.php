@@ -20,13 +20,14 @@ class Guild
     use TimestampableTrait;
 
     /**
-     * @var int|null
+     * @var string
      *
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\Column(type="bigint", unique=true, nullable=false)
+     * @ORM\CustomIdGenerator(class="App\Doctrine\SnowflakeGenerator")
      */
-    private ?int $id = null;
+    private string $id;
 
     /**
      * @var string
@@ -72,17 +73,17 @@ class Guild
     }
 
     /**
-     * @return int|null
+     * @return string
      */
-    public function getId(): ?int
+    public function getId(): string
     {
         return $this->id;
     }
 
     /**
-     * @param int|null $id
+     * @param string $id
      */
-    public function setId(?int $id): void
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
