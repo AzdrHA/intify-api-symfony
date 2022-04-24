@@ -63,7 +63,7 @@ class File
     /**
      * @var MessageAttachment
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\Message\MessageAttachment", inversedBy="file", cascade={"all"})
+     * @ORM\OneToOne(targetEntity="App\Entity\Message\MessageAttachment", mappedBy="file", cascade={"all"})
      */
     private MessageAttachment $messageAttachment;
 

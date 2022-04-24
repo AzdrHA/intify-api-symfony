@@ -3,7 +3,9 @@
 namespace App\ServiceApi\Message;
 
 use App\Entity\Channel\Channel;
+use App\Entity\File\File;
 use App\Entity\Message\Message;
+use App\Entity\Message\MessageAttachment;
 use App\Exception\ApiException;
 use App\Exception\ApiFormErrorException;
 use App\Form\Message\MessageCreateType;
@@ -13,10 +15,17 @@ use App\Service\Message\MessageService as BaseMessageService;
 use App\ServiceApi\DefaultService;
 use App\ServiceApi\User\UserService;
 use App\Utils\UtilsNormalizer;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManagerInterface;
+use FOS\RestBundle\Controller\Annotations\ParamInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class MessageService extends DefaultService
 {
@@ -24,16 +33,23 @@ class MessageService extends DefaultService
     private MessageManager $messageManager;
     private BaseMessageService $messageService;
     private MercureService $mercureService;
+    private SluggerInterface $slugger;
+    private ParameterBagInterface $param;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         FormFactoryInterface $formFactory, UserService $userService, MessageManager $messageManager,
-        BaseMessageService $messageService, MercureService $mercureService
+        BaseMessageService $messageService, MercureService $mercureService, SluggerInterface $slugger,
+        ParameterBagInterface $param, EntityManagerInterface $entityManager
     ){
         $this->formFactory = $formFactory;
         $this->userService = $userService;
         $this->messageManager = $messageManager;
         $this->messageService = $messageService;
         $this->mercureService = $mercureService;
+        $this->slugger = $slugger;
+        $this->param = $param;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -51,8 +67,40 @@ class MessageService extends DefaultService
 
         $message = new Message();
 
-        $callback = function () use ($message, $channel)
+        $callback = function () use ($message, $channel, $request)
         {
+            $file = $request->files->get('file');
+
+            if ($file) {
+
+                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $this->slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+
+                try {
+                    $file->move(
+                        $this->param->get('file_directory'),
+                        $newFilename
+                    );
+                    $file = new File();
+                    $file->setName($originalFilename);
+                    $file->setSize(10);
+                    $file->setPath($this->param->get('file_directory') . $newFilename);
+                    $this->entityManager->persist($file);
+
+                    $messageAttachment = new MessageAttachment();
+                    $messageAttachment->setFile($file);
+                    $messageAttachment->setMessage($message);
+                    $this->entityManager->persist($file);
+                    $this->entityManager->flush();
+                } catch (FileException $e) {
+                    // ... handle exception if something happens during file upload
+                }
+
+                // updates the 'brochureFilename' property to store the PDF file name
+                // instead of its contents
+//                $message->setMessageAttachments($newFilename);
+            }
             $message->setOwner($this->userService->getUserOrException());
             $message->setChannel($channel);
             $this->messageManager->save($message);

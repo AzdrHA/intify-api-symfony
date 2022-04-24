@@ -2,6 +2,7 @@
 
 namespace App\Entity\User;
 
+use App\Entity\Channel\Channel;
 use App\Traits\TimestampableTrait;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -102,6 +103,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var Collection
      *
      * @ORM\ManyToMany(targetEntity="App\Entity\Channel\Channel", mappedBy="recipients", cascade={"all"})
+     * @Assert\NotNull(groups={"dm"})
      */
     private Collection $privateChannels;
 
@@ -325,6 +327,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPrivateChannels(Collection $privateChannels): void
     {
         $this->privateChannels = $privateChannels;
+    }
+
+    public function addPrivateChannel(Channel $channel): self
+    {
+        if (!$this->privateChannels->contains($channel)) {
+            $this->privateChannels[] = $channel;
+        }
+
+        return $this;
     }
 
     /**

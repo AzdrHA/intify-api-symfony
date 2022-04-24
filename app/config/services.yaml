@@ -8,6 +8,7 @@ parameters:
     api_route: "/api/v1"
     mercure_jwt_secret: "%env(MERCURE_PUBLISHER_JWT_KEY)%"
     mercure_jwt_public: "%env(MERCURE_SUBSCRIBER_JWT_KEY)%"
+    file_directory: '%kernel.project_dir%/public/media'
 
 services:
     # default configuration for services in *this* file

@@ -73,6 +73,20 @@ class GuildService extends DefaultService
      */
     public function getGuild(Request $request, Guild $guild): array
     {
+        /*$res = $this->guildManager->getRepository()->createQueryBuilder('guild')
+            ->addSelect('channels', 'channels_parent')
+            ->leftJoin('guild.channels', 'channels')
+            ->leftJoin('channels.parent', 'channels_parent')
+            ->where('guild.id = :guild_id')
+            ->groupBy('channels_parent.id')
+            ->orderBy('channels.position')
+            ->setParameter('guild_id', $guild->getId())
+            ->getQuery()
+            ->getResult(AbstractQuery::HYDRATE_ARRAY);
+
+        UtilsNormalizer::normalizeArray($res);
+
+        return $res;*/
         return $this->guildService->serializeGuild($guild);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Controller\User;
 
 use App\Controller\DefaultApiController;
+use App\ServiceApi\Channel\ChannelService;
 use App\ServiceApi\User\UserService;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -10,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @Rest\Route("/users")
+ * @Rest\Route("/users/@me")
  */
 class UserController extends DefaultApiController
 {

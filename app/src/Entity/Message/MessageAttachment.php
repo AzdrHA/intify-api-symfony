@@ -24,20 +24,6 @@ class MessageAttachment
     private string $id;
 
     /**
-     * @var Message
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Message\Message", inversedBy="messageAttachments", cascade={"all"})
-     */
-    private Message $message;
-
-    /**
-     * @var File
-     *
-     * @ORM\OneToOne(targetEntity="App\Entity\File\File", mappedBy="messageAttachment", cascade={"all"})
-     */
-    private File $file;
-
-    /**
      * @return string
      */
     public function getId(): string
@@ -51,5 +37,52 @@ class MessageAttachment
     public function setId(string $id): void
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return Message
+     */
+    public function getMessage(): Message
+    {
+        return $this->message;
+    }
+
+    /**
+     * @var Message
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Message\Message", inversedBy="messageAttachments", cascade={"all"})
+     */
+    private Message $message;
+
+    /**
+     * @var File
+     *
+     * @ORM\OneToOne(targetEntity="App\Entity\File\File", inversedBy="messageAttachment", cascade={"all"})
+     */
+    private File $file;
+
+
+    /**
+     * @param Message $message
+     */
+    public function setMessage(Message $message): void
+    {
+        $this->message = $message;
+    }
+
+    /**
+     * @return File
+     */
+    public function getFile(): File
+    {
+        return $this->file;
+    }
+
+    /**
+     * @param File $file
+     */
+    public function setFile(File $file): void
+    {
+        $this->file = $file;
     }
 }

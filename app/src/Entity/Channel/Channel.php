@@ -4,6 +4,7 @@ namespace App\Entity\Channel;
 
 use App\Entity\File\File;
 use App\Entity\Guild\Guild;
+use App\Entity\User\User;
 use App\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -110,6 +111,7 @@ class Channel
      * @var Collection
      *
      * @ORM\ManyToMany(targetEntity="App\Entity\User\User", inversedBy="privateChannels", cascade={"all"})
+     * @Assert\NotNull(groups={"dm"})
      */
     private Collection $recipients;
 
@@ -255,5 +257,31 @@ class Channel
     #[Pure] public function isGuildChannel(): bool
     {
         return in_array($this->type, $this->guildChannel());
+    }
+
+    /**
+     * @return ArrayCollection|Collection
+     */
+    public function getRecipients(): ArrayCollection|Collection
+    {
+        return $this->recipients;
+    }
+
+    /**
+     * @param ArrayCollection|Collection $recipients
+     */
+    public function setRecipients(ArrayCollection|Collection $recipients): void
+    {
+        $this->recipients = $recipients;
+    }
+
+    public function addRecipient(User $user): self
+    {
+        if (!$this->recipients->contains($user)) {
+            $this->recipients[] = $user;
+            $user->addPrivateChannel($this);
+        }
+
+        return $this;
     }
 }
