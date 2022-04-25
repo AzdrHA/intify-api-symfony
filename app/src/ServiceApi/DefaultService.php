@@ -2,6 +2,7 @@
 
 namespace App\ServiceApi;
 
+use App\Entity\Model\FileDoctrineEntity;
 use App\Exception\ApiFormErrorException;
 use App\Utils\UtilsForm;
 use App\Utils\UtilsNormalizer;
@@ -14,6 +15,12 @@ use Symfony\Component\Serializer\Exception\ExceptionInterface;
 class DefaultService
 {
     protected ?FormFactoryInterface $formFactory = null;
+
+    protected array $commonBlackList = ["externCreatedAt", "externUpdatedAt", "externId", "logName"] + FileDoctrineEntity::BLACKLIST_NORMALIZE_FIELDS;
+    protected array $listBlackList = [];
+    protected array $listWhiteList = [];
+    protected array $singleWhiteList = [];
+    protected array $singleBlackList = [];
 
     /**
      * @param Request $request
@@ -28,12 +35,11 @@ class DefaultService
     {
         $form = $this->formFactory->create($formClass, $entity, array_merge(
             ['method' => $request->getMethod()], $params
-        ));
-        $form->submit($request->request->all());
+        ))->handleRequest($request);
+        $form->submit(json_decode($request->getContent(), true));
 
         if($form->isSubmitted() && $form->isValid())
         {
-            dump($form->get('file')->getData());
             $closure();
         }
 

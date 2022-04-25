@@ -56,23 +56,6 @@ class Message
     private Collection $messageAttachments;
 
     /**
-     * @return Collection
-     */
-    public function getMessageAttachments(): Collection
-    {
-        return $this->messageAttachments;
-    }
-
-    /**
-     * @param Collection $messageAttachments
-     */
-    public function setMessageAttachments(Collection $messageAttachments): void
-    {
-        $this->messageAttachments = $messageAttachments;
-    }
-
-
-    /**
      * @return string
      */
     public function getId(): string
@@ -134,5 +117,21 @@ class Message
     public function setOwner(User $owner): void
     {
         $this->owner = $owner;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getMessageAttachments(): Collection
+    {
+        return $this->messageAttachments;
+    }
+
+    /**
+     * @param Collection $messageAttachments
+     */
+    public function setMessageAttachments(Collection $messageAttachments): void
+    {
+        $this->messageAttachments = $messageAttachments;
     }
 }

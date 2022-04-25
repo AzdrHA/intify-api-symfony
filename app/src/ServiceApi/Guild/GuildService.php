@@ -8,6 +8,7 @@ use App\Form\Guild\CreateGuildType;
 use App\Manager\Guild\GuildManager;
 use App\Manager\Guild\GuildMemberManager;
 use App\Service\Guild\GuildService as BaseGuildService;
+use App\Service\User\UserService as BaseUserService;
 use App\ServiceApi\Channel\ChannelService;
 use App\ServiceApi\DefaultService;
 use App\ServiceApi\User\UserService;
@@ -22,25 +23,21 @@ class GuildService extends DefaultService
     private ChannelService $channelService;
     private BaseGuildService $guildService;
     private GuildMemberManager $guildMemberManager;
+    private BaseUserService $baseUserService;
 
-    /**
-     * @param FormFactoryInterface $formFactory
-     * @param UserService $userService
-     * @param GuildManager $guildManager
-     * @param ChannelService $channelService
-     * @param BaseGuildService $guildService
-     * @param GuildMemberManager $guildMemberManager
-     */
     public function __construct(
         FormFactoryInterface $formFactory, UserService $userService, GuildManager $guildManager,
-        ChannelService $channelService, BaseGuildService $guildService, GuildMemberManager $guildMemberManager
-    ) {
+        ChannelService       $channelService, BaseGuildService $guildService, GuildMemberManager $guildMemberManager,
+        BaseUserService $baseUserService
+    )
+    {
         $this->formFactory = $formFactory;
         $this->userService = $userService;
         $this->guildManager = $guildManager;
         $this->channelService = $channelService;
         $this->guildService = $guildService;
         $this->guildMemberManager = $guildMemberManager;
+        $this->baseUserService = $baseUserService;
     }
 
     /**
@@ -52,8 +49,7 @@ class GuildService extends DefaultService
     {
         $guild = new Guild();
 
-        $closure = function () use ($guild)
-        {
+        $closure = function () use ($guild) {
             $guild->setOwner($this->userService->getUserOrException());
             $this->channelService->initializeDefaultChannel($guild);
             $this->guildMemberManager->addMember($guild, $this->userService->getUserOrException());
@@ -62,7 +58,10 @@ class GuildService extends DefaultService
 
         $this->handleForm($request, CreateGuildType::class, $guild, $closure);
 
-        return $this->guildService->serializeGuild($guild);
+        // TODO ADD SOCKET EVENT
+        // TODO $this->guildService->serializeGuild($guild);
+        // TODO GIVE GOOD RES
+        return $this->baseUserService->serializeUser($guild->getOwner());
     }
 
     /**

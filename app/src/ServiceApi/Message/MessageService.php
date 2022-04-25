@@ -38,10 +38,11 @@ class MessageService extends DefaultService
     private EntityManagerInterface $entityManager;
 
     public function __construct(
-        FormFactoryInterface $formFactory, UserService $userService, MessageManager $messageManager,
-        BaseMessageService $messageService, MercureService $mercureService, SluggerInterface $slugger,
+        FormFactoryInterface  $formFactory, UserService $userService, MessageManager $messageManager,
+        BaseMessageService    $messageService, MercureService $mercureService, SluggerInterface $slugger,
         ParameterBagInterface $param, EntityManagerInterface $entityManager
-    ){
+    )
+    {
         $this->formFactory = $formFactory;
         $this->userService = $userService;
         $this->messageManager = $messageManager;
@@ -67,43 +68,35 @@ class MessageService extends DefaultService
 
         $message = new Message();
 
-        $callback = function () use ($message, $channel, $request)
-        {
-            $file = $request->files->get('file');
-
-            if ($file) {
-
-                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $this->slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
-
-                try {
-                    $file->move(
-                        $this->param->get('file_directory'),
-                        $newFilename
-                    );
-                    $file = new File();
-                    $file->setName($originalFilename);
-                    $file->setSize(10);
-                    $file->setPath($this->param->get('file_directory') . $newFilename);
-                    $this->entityManager->persist($file);
-
-                    $messageAttachment = new MessageAttachment();
-                    $messageAttachment->setFile($file);
-                    $messageAttachment->setMessage($message);
-                    $this->entityManager->persist($file);
-                    $this->entityManager->flush();
-                } catch (FileException $e) {
-                    // ... handle exception if something happens during file upload
-                }
-
-                // updates the 'brochureFilename' property to store the PDF file name
-                // instead of its contents
-//                $message->setMessageAttachments($newFilename);
-            }
+        $callback = function () use ($message, $channel, $request) {
+//            $file = $request->files->get('file');
             $message->setOwner($this->userService->getUserOrException());
             $message->setChannel($channel);
             $this->messageManager->save($message);
+
+
+            /*if ($file) {
+                $messageAttachment = new MessageAttachment();
+                $messageAttachment->setMessage($message);
+                $this->messageManager->save($messageAttachment);
+
+                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $newFilename = $this->slugger->slug($originalFilename) . '.' . $file->guessExtension();
+                $path = '/attachments' . '/' . $message->getId() . '/' . $messageAttachment->getId();
+
+                $file->move(
+                    $this->param->get('file_directory') . $path,
+                    $newFilename
+                );
+
+                $file = new File();
+                $file->setName($originalFilename);
+                $file->setSize(10);
+                $file->setPath($path.'/'.$newFilename);
+                $file->setMessageAttachment($messageAttachment);
+                $this->messageManager->save($file);
+            }*/
+
             $this->mercureService->makeRequest(sprintf(MercureService::CREATE_MESSAGE, $channel->getId()), $this->messageService->serializeMessage($message));
         };
 

@@ -3,13 +3,14 @@
 namespace App\Entity\Message;
 
 use App\Entity\File\File;
+use App\Entity\Model\FileDoctrineEntity;
 use App\Traits\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity()
  */
-class MessageAttachment
+class MessageAttachment extends FileDoctrineEntity
 {
     use TimestampableTrait;
 
@@ -55,34 +56,10 @@ class MessageAttachment
     private Message $message;
 
     /**
-     * @var File
-     *
-     * @ORM\OneToOne(targetEntity="App\Entity\File\File", inversedBy="messageAttachment", cascade={"all"})
-     */
-    private File $file;
-
-
-    /**
      * @param Message $message
      */
     public function setMessage(Message $message): void
     {
         $this->message = $message;
-    }
-
-    /**
-     * @return File
-     */
-    public function getFile(): File
-    {
-        return $this->file;
-    }
-
-    /**
-     * @param File $file
-     */
-    public function setFile(File $file): void
-    {
-        $this->file = $file;
     }
 }

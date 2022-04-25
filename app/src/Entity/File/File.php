@@ -68,6 +68,22 @@ class File
     private MessageAttachment $messageAttachment;
 
     /**
+     * @return MessageAttachment
+     */
+    public function getMessageAttachment(): MessageAttachment
+    {
+        return $this->messageAttachment;
+    }
+
+    /**
+     * @param MessageAttachment $messageAttachment
+     */
+    public function setMessageAttachment(MessageAttachment $messageAttachment): void
+    {
+        $this->messageAttachment = $messageAttachment;
+    }
+
+    /**
      * @var FileFormat
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\File\FileFormat", inversedBy="files", cascade={"all"})
