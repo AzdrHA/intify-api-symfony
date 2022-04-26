@@ -284,4 +284,14 @@ class Channel
 
         return $this;
     }
+
+    public function addChildren(Channel $channel): self
+    {
+        if (!$this->children->contains($channel)) {
+            $this->children[] = $channel;
+            $channel->setParent($this);
+        }
+
+        return $this;
+    }
 }

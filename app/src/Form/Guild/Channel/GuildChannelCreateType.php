@@ -4,6 +4,7 @@ namespace App\Form\Guild\Channel;
 
 use App\Entity\Channel\Channel;
 use App\Form\DefaultForm;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -29,7 +30,8 @@ class GuildChannelCreateType extends DefaultForm
             ->add('topic', TextareaType::class, [
                 'required' => true,
             ])
-            ->add('parent', IntegerType::class, [
+            ->add('parent', EntityType::class, [
+                'class' => Channel::class,
                 'required' => false
             ])
         ;

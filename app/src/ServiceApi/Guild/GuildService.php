@@ -7,11 +7,13 @@ use App\Exception\ApiFormErrorException;
 use App\Form\Guild\CreateGuildType;
 use App\Manager\Guild\GuildManager;
 use App\Manager\Guild\GuildMemberManager;
+use App\Service\Guild\GuildMemberService;
 use App\Service\Guild\GuildService as BaseGuildService;
-use App\Service\User\UserService as BaseUserService;
+use App\Service\Mercure\Guild\GuildMercureService;
 use App\ServiceApi\Channel\ChannelService;
 use App\ServiceApi\DefaultService;
 use App\ServiceApi\User\UserService;
+use Doctrine\ORM\AbstractQuery;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
@@ -23,12 +25,13 @@ class GuildService extends DefaultService
     private ChannelService $channelService;
     private BaseGuildService $guildService;
     private GuildMemberManager $guildMemberManager;
-    private BaseUserService $baseUserService;
+    private GuildMercureService $guildMercureService;
+    private GuildMemberService $guildMemberService;
 
     public function __construct(
         FormFactoryInterface $formFactory, UserService $userService, GuildManager $guildManager,
         ChannelService       $channelService, BaseGuildService $guildService, GuildMemberManager $guildMemberManager,
-        BaseUserService $baseUserService
+        GuildMercureService  $guildMercureService, GuildMemberService $guildMemberService
     )
     {
         $this->formFactory = $formFactory;
@@ -37,7 +40,8 @@ class GuildService extends DefaultService
         $this->channelService = $channelService;
         $this->guildService = $guildService;
         $this->guildMemberManager = $guildMemberManager;
-        $this->baseUserService = $baseUserService;
+        $this->guildMercureService = $guildMercureService;
+        $this->guildMemberService = $guildMemberService;
     }
 
     /**
@@ -55,13 +59,10 @@ class GuildService extends DefaultService
             $this->guildMemberManager->addMember($guild, $this->userService->getUserOrException());
             $this->guildManager->save($guild);
         };
-
         $this->handleForm($request, CreateGuildType::class, $guild, $closure);
 
-        // TODO ADD SOCKET EVENT
-        // TODO $this->guildService->serializeGuild($guild);
-        // TODO GIVE GOOD RES
-        return $this->baseUserService->serializeUser($guild->getOwner());
+        $this->guildMercureService->createGuild($this->userService->getUserOrException(), $this->guildMemberService->serializeMembersCollection($this->userService->getUserOrException()->getGuildMembers()));
+        return $this->guildService->serializeGuild($guild);
     }
 
     /**

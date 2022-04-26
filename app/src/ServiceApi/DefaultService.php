@@ -35,8 +35,8 @@ class DefaultService
     {
         $form = $this->formFactory->create($formClass, $entity, array_merge(
             ['method' => $request->getMethod()], $params
-        ))->handleRequest($request);
-        $form->submit(json_decode($request->getContent(), true));
+        ));
+        $form->submit($request->request->all(), true);
 
         if($form->isSubmitted() && $form->isValid())
         {

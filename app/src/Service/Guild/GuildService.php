@@ -4,9 +4,7 @@ namespace App\Service\Guild;
 
 use App\Entity\Guild\Guild;
 use App\Service\Channel\ChannelService;
-use App\Service\User\UserService;
 use App\Utils\UtilsNormalizer;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class GuildService

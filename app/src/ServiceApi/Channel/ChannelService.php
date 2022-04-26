@@ -10,6 +10,7 @@ use App\Form\Guild\Channel\GuildChannelCreateType;
 use App\Form\User\Channel\UserPrivateChannelCreateType;
 use App\Manager\Channel\ChannelManager;
 use App\Service\Channel\ChannelService as BaseChannelService;
+use App\Service\Mercure\Guild\GuildChannelMercureService;
 use App\ServiceApi\DefaultService;
 use App\ServiceApi\User\UserService;
 use App\Utils\UtilsNormalizer;
@@ -25,15 +26,18 @@ class ChannelService extends DefaultService
     private BaseChannelService $channelService;
     private ChannelManager $channelManager;
     private UserService $userService;
+    private GuildChannelMercureService $guildChannelMercureService;
 
     public function __construct(
-        FormFactoryInterface $formFactory, BaseChannelService $channelService, ChannelManager $channelManager, UserService $userService
+        FormFactoryInterface $formFactory, BaseChannelService $channelService, ChannelManager $channelManager,
+        UserService $userService, GuildChannelMercureService $guildChannelMercureService
     )
     {
         $this->formFactory = $formFactory;
         $this->channelService = $channelService;
         $this->channelManager = $channelManager;
         $this->userService = $userService;
+        $this->guildChannelMercureService = $guildChannelMercureService;
     }
 
     /**
@@ -44,16 +48,17 @@ class ChannelService extends DefaultService
     {
         $channel = new Channel();
 
-        $callback = function () use ($channel, $guild)
+        $callback = function () use ($channel, $guild, $request)
         {
             if (!$channel->isGuildChannel())
                 throw new ApiException('Only Guild channel is available', 400, $channel->guildChannel());
 
             $channel->setGuild($guild);
+            $this->channelManager->save($channel);
         };
 
         $this->handleForm($request, GuildChannelCreateType::class, $channel, $callback);
-
+        $this->guildChannelMercureService->createChannel($guild, $this->channelService->serializeChannel($guild->getChannels()));
         return $this->channelService->serializeChannel(new ArrayCollection([$channel]));
     }
 
@@ -121,11 +126,18 @@ class ChannelService extends DefaultService
             $parent->setType(Channel::GUILD_CATEGORY);
             $guild->addChannel($parent);
 
-            $child = new Channel();
-            $child->setName('General');
-            $child->setType($channel);
-            $child->setParent($parent);
-            $guild->addChannel($child);
+            $child1 = new Channel();
+            $child1->setName('General');
+            $child1->setType($channel);
+            $parent->addChildren($child1);
+            $guild->addChannel($child1);
+
+            $child2 = new Channel();
+            $child2->setName('General 2');
+            $child2->setType($channel);
+            $child2->setParent($parent);
+            $parent->addChildren($child2);
+            $guild->addChannel($child2);
         }
     }
 }

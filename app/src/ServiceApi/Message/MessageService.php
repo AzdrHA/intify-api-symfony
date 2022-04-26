@@ -67,41 +67,31 @@ class MessageService extends DefaultService
             throw new ApiException('is not a text channel');
 
         $message = new Message();
-
         $callback = function () use ($message, $channel, $request) {
-//            $file = $request->files->get('file');
+            $file = $request->files->get('file');
             $message->setOwner($this->userService->getUserOrException());
             $message->setChannel($channel);
             $this->messageManager->save($message);
 
-
-            /*if ($file) {
-                $messageAttachment = new MessageAttachment();
-                $messageAttachment->setMessage($message);
-                $this->messageManager->save($messageAttachment);
-
+            if ($file) {
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $newFilename = $this->slugger->slug($originalFilename) . '.' . $file->guessExtension();
-                $path = '/attachments' . '/' . $message->getId() . '/' . $messageAttachment->getId();
+                $path = '/attachments' . '/' . $message->getId();
 
                 $file->move(
                     $this->param->get('file_directory') . $path,
                     $newFilename
                 );
-
-                $file = new File();
-                $file->setName($originalFilename);
-                $file->setSize(10);
-                $file->setPath($path.'/'.$newFilename);
-                $file->setMessageAttachment($messageAttachment);
-                $this->messageManager->save($file);
-            }*/
-
+                $messageAttachment = new MessageAttachment();
+                $messageAttachment->setMessage($message);
+                $messageAttachment->setPath($path.'/'.$newFilename);
+                $messageAttachment->setClientName($originalFilename);
+                $this->messageManager->save($messageAttachment);
+            }
             $this->mercureService->makeRequest(sprintf(MercureService::CREATE_MESSAGE, $channel->getId()), $this->messageService->serializeMessage($message));
         };
 
         $this->handleForm($request, MessageCreateType::class, $message, $callback);
-
         return $this->messageService->serializeMessage($message);
     }
 
@@ -113,8 +103,9 @@ class MessageService extends DefaultService
     public function getMessageByChannel(Request $request, Channel $channel): array
     {
         $messages = $this->messageManager->getRepository()->createQueryBuilder('m')
-            ->addSelect('owner', 'members')
+            ->addSelect('owner', 'members', 'messageAttachments')
             ->leftJoin('m.owner', 'owner')
+            ->leftJoin('m.messageAttachments', 'messageAttachments')
             ->leftJoin('owner.guildMembers', 'members')
             ->leftJoin('members.guild', 'guild')
             ->leftJoin('m.channel', 'channel')
@@ -124,6 +115,7 @@ class MessageService extends DefaultService
                 'channel_id' => $channel->getId(),
                 'guild_id' => $channel->getGuild()->getId()
             ])
+            ->orderBy('m.createdAt')
             ->getQuery()
             ->getResult(AbstractQuery::HYDRATE_ARRAY);
 
