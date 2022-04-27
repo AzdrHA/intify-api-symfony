@@ -24,6 +24,11 @@ abstract class DefaultManager
         $this->repository = $repository;
     }
 
+    public function create()
+    {
+        return new $this->className();
+    }
+
     public function getRepository(): EntityRepository
     {
         return $this->repository;
@@ -49,11 +54,11 @@ abstract class DefaultManager
     }
 
     /**
-     * @param User $entity
+     * @param object $entity
      * @param bool $flush
      * @return void
      */
-    public function remove(User $entity, bool $flush = true): void
+    public function remove(object $entity, bool $flush = true): void
     {
         $this->em->remove($entity);
         if ($flush)

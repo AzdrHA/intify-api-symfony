@@ -11,6 +11,7 @@ use Closure;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\expr;
 
 class DefaultService
 {
@@ -36,7 +37,12 @@ class DefaultService
         $form = $this->formFactory->create($formClass, $entity, array_merge(
             ['method' => $request->getMethod()], $params
         ));
-        $form->submit($request->request->all(), true);
+        if (count($request->request->all())) {
+            $form->submit($request->request->all(), true);
+        } else {
+            $form->handleRequest($request);
+            $form->submit(json_decode($request->getContent(), true));
+        }
 
         if($form->isSubmitted() && $form->isValid())
         {

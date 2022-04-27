@@ -128,12 +128,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private Collection $messagesOwner;
 
+    /**
+     * @var Collection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Guild\GuildInvite", mappedBy="inviter", cascade={"all"})
+     */
+    private Collection $invites;
+
     #[Pure] public function __construct()
     {
         $this->guildOwned = new ArrayCollection();
         $this->messagesOwner = new ArrayCollection();
         $this->privateChannels = new ArrayCollection();
         $this->guildMembers = new ArrayCollection();
+        $this->invites = new ArrayCollection();
     }
 
     /**

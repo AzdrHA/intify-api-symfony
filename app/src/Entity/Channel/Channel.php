@@ -116,16 +116,17 @@ class Channel
     private Collection $recipients;
 
     /**
-     * @var File|null
+     * @var Collection
      *
-     * @ORM\OneToOne(targetEntity="App\Entity\File\File", inversedBy="channelIcon", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Guild\GuildInvite", mappedBy="channel", cascade={"all"})
      */
-    private ?File $icon = null;
+    private Collection $invites;
 
     #[Pure] public function __construct()
     {
         $this->children = new ArrayCollection();
         $this->recipients = new ArrayCollection();
+        $this->invites = new ArrayCollection();
     }
 
     /**

@@ -3,7 +3,6 @@
 namespace App\ServiceApi\Message;
 
 use App\Entity\Channel\Channel;
-use App\Entity\File\File;
 use App\Entity\Message\Message;
 use App\Entity\Message\MessageAttachment;
 use App\Exception\ApiException;
@@ -15,14 +14,9 @@ use App\Service\Message\MessageService as BaseMessageService;
 use App\ServiceApi\DefaultService;
 use App\ServiceApi\User\UserService;
 use App\Utils\UtilsNormalizer;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\EntityManagerInterface;
-use FOS\RestBundle\Controller\Annotations\ParamInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -35,12 +29,11 @@ class MessageService extends DefaultService
     private MercureService $mercureService;
     private SluggerInterface $slugger;
     private ParameterBagInterface $param;
-    private EntityManagerInterface $entityManager;
 
     public function __construct(
         FormFactoryInterface  $formFactory, UserService $userService, MessageManager $messageManager,
         BaseMessageService    $messageService, MercureService $mercureService, SluggerInterface $slugger,
-        ParameterBagInterface $param, EntityManagerInterface $entityManager
+        ParameterBagInterface $param
     )
     {
         $this->formFactory = $formFactory;
@@ -50,7 +43,6 @@ class MessageService extends DefaultService
         $this->mercureService = $mercureService;
         $this->slugger = $slugger;
         $this->param = $param;
-        $this->entityManager = $entityManager;
     }
 
     /**

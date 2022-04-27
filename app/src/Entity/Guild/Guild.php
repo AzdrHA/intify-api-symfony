@@ -39,13 +39,6 @@ class Guild
     private string $name;
 
     /**
-     * @var File|null
-     *
-     * @ORM\OneToOne(targetEntity="App\Entity\File\File", inversedBy="guildIcon", cascade={"all"})
-     */
-    private ?File $icon = null;
-
-    /**
      * @var User|null
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\User\User", inversedBy="guildOwned", cascade={"all"})
@@ -66,10 +59,18 @@ class Guild
      */
     private Collection $guildMembers;
 
+    /**
+     * @var Collection 
+     * 
+     * @ORM\OneToMany(targetEntity="App\Entity\Guild\GuildInvite", mappedBy="guild", cascade={"all"})
+     */
+    private Collection $invites;
+
     #[Pure] public function __construct()
     {
         $this->channels = new ArrayCollection();
         $this->guildMembers = new ArrayCollection();
+        $this->invites = new ArrayCollection();
     }
 
     /**
@@ -102,22 +103,6 @@ class Guild
     public function setName(string $name): void
     {
         $this->name = $name;
-    }
-
-    /**
-     * @return File|null
-     */
-    public function getIcon(): ?File
-    {
-        return $this->icon;
-    }
-
-    /**
-     * @param File|null $icon
-     */
-    public function setIcon(?File $icon): void
-    {
-        $this->icon = $icon;
     }
 
     /**
@@ -157,6 +142,16 @@ class Guild
         if (!$this->channels->contains($channel)) {
             $this->channels[] = $channel;
             $channel->setGuild($this);
+        }
+
+        return $this;
+    }
+
+    public function addMember(GuildMember $member): self
+    {
+        if (!$this->guildMembers->contains($member)) {
+            $this->guildMembers[] = $member;
+            $member->setGuild($this);
         }
 
         return $this;
