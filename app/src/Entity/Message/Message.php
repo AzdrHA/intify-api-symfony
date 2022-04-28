@@ -5,6 +5,7 @@ namespace App\Entity\Message;
 use App\Entity\Channel\Channel;
 use App\Entity\User\User;
 use App\Traits\TimestampableTrait;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,12 +28,11 @@ class Message
     private string $id;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(type="text")
-     * @Assert\NotNull()
+     * @ORM\Column(type="text", nullable=true)
      */
-    private string $content;
+    private ?string $content = null;
 
     /**
      * @var User
@@ -55,6 +55,11 @@ class Message
      */
     private Collection $messageAttachments;
 
+    public function __construct()
+    {
+        $this->messageAttachments = new ArrayCollection();
+    }
+
     /**
      * @return string
      */
@@ -72,17 +77,17 @@ class Message
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getContent(): string
+    public function getContent(): ?string
     {
         return $this->content;
     }
 
     /**
-     * @param string $content
+     * @param string|null $content
      */
-    public function setContent(string $content): void
+    public function setContent(?string $content): void
     {
         $this->content = $content;
     }
@@ -133,5 +138,15 @@ class Message
     public function setMessageAttachments(Collection $messageAttachments): void
     {
         $this->messageAttachments = $messageAttachments;
+    }
+
+    public function addMessageAttachments(MessageAttachment $attachment): self
+    {
+        if (!$this->messageAttachments->contains($attachment)) {
+            $this->messageAttachments[] = $attachment;
+            $attachment->setMessage($this);
+        }
+
+        return $this;
     }
 }

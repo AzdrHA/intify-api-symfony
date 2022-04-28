@@ -75,11 +75,14 @@ class MessageService extends DefaultService
                     $newFilename
                 );
                 $messageAttachment = new MessageAttachment();
-                $messageAttachment->setMessage($message);
                 $messageAttachment->setPath($path.'/'.$newFilename);
                 $messageAttachment->setClientName($originalFilename);
                 $this->messageManager->save($messageAttachment);
+
+                $message->addMessageAttachments($messageAttachment);
+                $this->messageManager->save($message);
             }
+
             $this->mercureService->makeRequest(sprintf(MercureService::CREATE_MESSAGE, $channel->getId()), $this->messageService->serializeMessage($message));
         };
 

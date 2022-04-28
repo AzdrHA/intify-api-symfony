@@ -19,6 +19,21 @@ services:
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
 
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    links:
+      - mariadb_api:mariadb
+    depends_on:
+      - mariadb_api
+    networks:
+      - proxy
+      - api_internal
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+
   nginx_api:
     image: nginx:latest
     networks:
